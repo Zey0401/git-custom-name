@@ -1,0 +1,141 @@
+<!doctype html>
+<html lang="zh-CN">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>现代建筑人物志 · 近代以来的建筑师与他们的建筑</title>
+<meta name="description" content="从流水别墅到 CCTV 总部：17 位近代以来著名建筑师、17 座代表作，可按地区、时期与关键词检索。">
+<link rel="preload" as="image" href="assets/img/pei-1.jpg">
+<link rel="stylesheet" href="assets/styles.css">
+</head>
+<body>
+<a class="skip-link" href="#gallery">跳到作品列表</a>
+
+<header class="topbar">
+  <div class="topbar__inner">
+    <a class="brand" href="#top">
+      <span class="brand__mark" aria-hidden="true"></span>
+      <span class="brand__text">
+        现代建筑人物志
+        <small>MODERN ARCHITECTS</small>
+      </span>
+    </a>
+    <div class="topbar__tools">
+      <div class="search">
+        <svg class="search__icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" aria-hidden="true">
+          <circle cx="11" cy="11" r="8"></circle>
+          <path d="m21 21-4.3-4.3"></path>
+        </svg>
+        <label class="sr-only" for="search">搜索建筑师、建筑或城市</label>
+        <input id="search" type="search" placeholder="搜索建筑师、建筑或城市" autocomplete="off" spellcheck="false">
+      </div>
+      <div class="seg" role="group" aria-label="切换视图">
+        <button class="seg__btn is-active" type="button" data-view="grid" aria-pressed="true">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+            <rect x="3" y="3" width="7" height="7" rx="1"></rect>
+            <rect x="14" y="3" width="7" height="7" rx="1"></rect>
+            <rect x="14" y="14" width="7" height="7" rx="1"></rect>
+            <rect x="3" y="14" width="7" height="7" rx="1"></rect>
+          </svg>
+          画廊
+        </button>
+        <button class="seg__btn" type="button" data-view="timeline" aria-pressed="false">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+            <path d="M8 6h13"></path><path d="M8 12h13"></path><path d="M8 18h13"></path>
+            <path d="M3 6h.01"></path><path d="M3 12h.01"></path><path d="M3 18h.01"></path>
+          </svg>
+          年表
+        </button>
+      </div>
+    </div>
+  </div>
+</header>
+
+<main id="top">
+  <section class="hero">
+    <div class="hero__media" aria-hidden="true"></div>
+    <div class="hero__inner">
+      <p class="hero__eyebrow">1850 — 今天 · 现代建筑的谱系</p>
+      <h1>近代以来的建筑师<br>与他们的建筑</h1>
+      <p class="hero__lede">
+        从草原住宅到清水混凝土，从巴西利亚的曲线到北京的悬挑结构。
+        这里收录 17 位改变现代建造方式的建筑师，以及各自最具代表性的一座建筑。
+      </p>
+      <dl class="hero__stats">
+        <div><dt>建筑师</dt><dd id="stat-architects">17</dd></div>
+        <div><dt>代表作</dt><dd id="stat-works">17</dd></div>
+        <div><dt>时间跨度</dt><dd>1850 — 今</dd></div>
+      </dl>
+    </div>
+  </section>
+
+  <section class="controls" aria-label="筛选条件">
+    <div class="controls__inner">
+      <div class="filter">
+        <span class="filter__label">地区</span>
+        <div class="chips" data-filter="region" role="group" aria-label="按地区筛选">
+          <button class="chip is-active" type="button" data-value="all">全部</button>
+          <button class="chip" type="button" data-value="欧洲">欧洲</button>
+          <button class="chip" type="button" data-value="美洲">美洲</button>
+          <button class="chip" type="button" data-value="亚洲">亚洲</button>
+        </div>
+      </div>
+      <div class="filter">
+        <span class="filter__label">时期</span>
+        <div class="chips" data-filter="era" role="group" aria-label="按时期筛选">
+          <button class="chip is-active" type="button" data-value="all">全部</button>
+          <button class="chip" type="button" data-value="early">1900–1945</button>
+          <button class="chip" type="button" data-value="postwar">1946–1979</button>
+          <button class="chip" type="button" data-value="contemporary">1980 至今</button>
+        </div>
+      </div>
+      <button class="reset" type="button" id="reset" hidden>清除筛选</button>
+    </div>
+    <p class="result" id="result" role="status"></p>
+  </section>
+
+  <section id="gallery" class="gallery" aria-label="建筑师画廊">
+    <div class="grid" id="grid"></div>
+  </section>
+
+  <section id="timeline" class="timeline" aria-label="建筑师年表" hidden>
+    <div class="timeline__inner" id="timeline-list"></div>
+  </section>
+</main>
+
+<footer class="site-footer">
+  <div class="site-footer__inner">
+    <div>
+      <h2>关于这个页面</h2>
+      <p>
+        一份用于浏览与检索的静态资料页：每位建筑师收录生卒、国别、流派、设计理念与四到五件代表作。
+        年份与地点以建筑落成年份为准。
+      </p>
+    </div>
+    <div>
+      <h2>图片来源</h2>
+      <p>
+        全部照片来自 Wikimedia Commons，遵循各自原始授权协议。
+        每张图片的作者与协议见详情页内的“图片来源”，点击可跳转到原始文件页。
+      </p>
+    </div>
+  </div>
+</footer>
+
+<div class="modal" id="modal" hidden>
+  <div class="modal__backdrop" data-close></div>
+  <div class="modal__panel" role="dialog" aria-modal="true" aria-labelledby="modal-title">
+    <button class="modal__close" type="button" data-close aria-label="关闭详情">
+      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" aria-hidden="true">
+        <path d="M18 6 6 18"></path><path d="m6 6 12 12"></path>
+      </svg>
+    </button>
+    <div class="modal__content" id="modal-content"></div>
+  </div>
+</div>
+
+<script src="assets/data.js" charset="utf-8"></script>
+<script src="assets/credits.js" charset="utf-8"></script>
+<script src="assets/app.js" charset="utf-8"></script>
+</body>
+</html>
