@@ -1,0 +1,4 @@
+# 发布产物与本地调试文件
+_site/
+tools/preview/
+*.log

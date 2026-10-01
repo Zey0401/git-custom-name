@@ -1,0 +1,52 @@
+name: Deploy to GitHub Pages
+
+on:
+  push:
+    branches: [main, master]
+  workflow_dispatch:
+
+permissions:
+  contents: read
+  pages: write
+  id-token: write
+
+concurrency:
+  group: pages
+  cancel-in-progress: true
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: 读取 Pages 地址
+        id: pages
+        uses: actions/configure-pages@v5
+
+      - name: 生成 SEO 文件（写入真实站点地址与预渲染卡片）
+        shell: pwsh
+        run: ./tools/build-site.ps1 -SiteUrl "${{ steps.pages.outputs.base_url }}"
+
+      - name: 整理待发布文件
+        shell: pwsh
+        run: |
+          New-Item -ItemType Directory -Force -Path _site | Out-Null
+          Copy-Item index.html, robots.txt, sitemap.xml -Destination _site
+          Copy-Item -Recurse assets -Destination _site
+
+      - name: 上传站点产物
+        uses: actions/upload-pages-artifact@v3
+        with:
+          path: _site
+
+  deploy:
+    needs: build
+    runs-on: ubuntu-latest
+    environment:
+      name: github-pages
+      url: ${{ steps.deployment.outputs.page_url }}
+    steps:
+      - name: 发布到 GitHub Pages
+        id: deployment
+        uses: actions/deploy-pages@v4

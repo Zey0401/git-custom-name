@@ -17,8 +17,13 @@
 | `assets/data.js` | 建筑师资料，改内容只需要动这个文件 |
 | `assets/credits.js` | 图片作者与授权信息，由脚本生成 |
 | `assets/img/` | 33 张建筑照片（Wikipedia/Wikimedia Commons，长边 1600px） |
+| `assets/og-cover.jpg` | 1200×630 分享封面（微信、社交平台与搜索结果的缩略图） |
+| `robots.txt`、`sitemap.xml` | 给搜索引擎看的两份文件，由构建脚本生成 |
 | `tools/fetch-images.ps1` | 重新下载图片并生成 `credits.js` |
 | `tools/contact-sheet.ps1` | 生成缩略图拼版，用于快速核对配图 |
+| `tools/build-site.ps1` | 写入站点地址、生成 SEO 元数据、预渲染卡片、输出 robots 与 sitemap |
+| `tools/make-og-cover.ps1` | 重新生成分享封面 |
+| `docs/deploy.md` | 部署到公网并提交搜索引擎收录的完整步骤 |
 
 ## 修改内容
 
@@ -33,6 +38,16 @@ powershell -ExecutionPolicy Bypass -File tools/fetch-images.ps1 -SkipDownload
 ```
 
 不带 `-SkipDownload` 会按 `tools/fetch-images.ps1` 中的清单重新下载全部照片。
+
+## 发布到网上
+
+```powershell
+powershell -ExecutionPolicy Bypass -File tools/build-site.ps1 -SiteUrl https://你的域名
+```
+
+这一步会把真实网址写进 canonical / og:url / sitemap，并把 17 张卡片预渲染进 HTML
+（百度这类不执行 JavaScript 的爬虫也能读到内容）。仓库里已经配好 GitHub Actions，
+推到 GitHub 后会自动部署、自动使用真实地址，完整步骤见 [docs/deploy.md](docs/deploy.md)。
 
 ## 图片来源
 
