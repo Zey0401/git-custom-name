@@ -23,6 +23,9 @@ jobs:
       - name: 读取 Pages 地址
         id: pages
         uses: actions/configure-pages@v5
+        with:
+          # 仓库尚未启用 Pages 时自动启用（否则 configure-pages 会因 404 失败）
+          enablement: true
 
       - name: 生成 SEO 文件（写入真实站点地址与预渲染卡片）
         shell: pwsh

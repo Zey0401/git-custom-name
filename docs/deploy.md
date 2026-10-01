@@ -20,7 +20,7 @@
 2. 在项目目录里执行（把地址换成你自己的仓库）：
 
    ```powershell
-   cd "D:\Users\泽\Desktop\dafaf"
+   cd 你的项目目录        # 存放这个网页的文件夹
    git remote add origin https://github.com/你的用户名/modern-architects.git
    git branch -M main
    git push -u origin main
