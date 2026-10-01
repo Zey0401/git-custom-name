@@ -7,6 +7,8 @@
   var state = { region: "all", era: "all", query: "", view: "grid" };
   var mediaCache = {};
   var mediaRequestToken = 0;
+  var ERA_VALUES = ["all", "early", "postwar", "contemporary"];
+  var ERA_LABELS = ["全部", "1900–1945", "1946–1979", "1980 至今"];
 
   var WORK_INNOVATIONS = {
     "罗比住宅": "连续窗带、悬挑屋面和围绕壁炉组织的自由平面，把草原住宅推向成熟。",
@@ -88,6 +90,7 @@
   var result = document.getElementById("result");
   var resetBtn = document.getElementById("reset");
   var searchInput = document.getElementById("search");
+  var eraSlider = document.getElementById("era-slider");
   var modal = document.getElementById("modal");
   var modalContent = document.getElementById("modal-content");
   var lastFocus = null;
@@ -202,32 +205,27 @@
     document.querySelectorAll(".chips").forEach(function (strip) {
       var maxScroll = Math.max(0, strip.scrollWidth - strip.clientWidth);
       var scrollable = maxScroll > 4;
-      var progress = maxScroll ? strip.scrollLeft / maxScroll : 0;
       strip.classList.toggle("is-scrollable", scrollable);
       strip.classList.toggle("at-start", strip.scrollLeft <= 4);
       strip.classList.toggle("at-end", strip.scrollLeft >= maxScroll - 4);
-      var rail = strip.nextElementSibling;
-      if (rail && rail.classList.contains("chips__rail")) {
-        rail.style.setProperty("--scroll-progress", Math.max(0, Math.min(1, progress)));
-      }
     });
   }
 
-  function ensureScrollRail(strip) {
-    var rail = strip.nextElementSibling;
-    if (rail && rail.classList.contains("chips__rail")) return rail;
-    rail = document.createElement("div");
-    rail.className = "chips__rail";
-    rail.setAttribute("aria-hidden", "true");
-    rail.innerHTML = '<span class="chips__dot"></span>';
-    strip.parentNode.insertBefore(rail, strip.nextSibling);
-    return rail;
+  function syncEraSlider() {
+    var index = Math.max(0, ERA_VALUES.indexOf(state.era));
+    if (eraSlider) {
+      eraSlider.value = String(index);
+      eraSlider.style.setProperty("--era-progress", (index / (ERA_VALUES.length - 1) * 100) + "%");
+      eraSlider.setAttribute("aria-valuetext", ERA_LABELS[index]);
+    }
+    document.querySelectorAll("[data-era-label]").forEach(function (label) {
+      label.classList.toggle("is-active", label.getAttribute("data-era-label") === state.era);
+    });
   }
 
   // 鼠标用户也可以拖动筛选条；触屏继续使用浏览器原生惯性滚动
   function enableDragScroll(strip) {
     if (!window.PointerEvent) return;
-    var rail = ensureScrollRail(strip);
     var active = false;
     var moved = false;
     var suppressClick = false;
@@ -278,49 +276,6 @@
       event.preventDefault();
       event.stopPropagation();
     }, true);
-
-    var railActive = false;
-    var railPointerId = -1;
-
-    function setRailPosition(event) {
-      var maxScroll = Math.max(0, strip.scrollWidth - strip.clientWidth);
-      if (!maxScroll) return;
-      var rect = rail.getBoundingClientRect();
-      var radius = 7;
-      var usableWidth = Math.max(1, rect.width - radius * 2);
-      var ratio = (event.clientX - rect.left - radius) / usableWidth;
-      strip.scrollLeft = Math.max(0, Math.min(1, ratio)) * maxScroll;
-      updateScrollHints();
-    }
-
-    rail.addEventListener("pointerdown", function (event) {
-      if (strip.scrollWidth - strip.clientWidth <= 4) return;
-      event.preventDefault();
-      railActive = true;
-      railPointerId = event.pointerId;
-      strip.classList.add("is-dragging");
-      if (rail.setPointerCapture) rail.setPointerCapture(railPointerId);
-      setRailPosition(event);
-    });
-
-    rail.addEventListener("pointermove", function (event) {
-      if (!railActive || event.pointerId !== railPointerId) return;
-      event.preventDefault();
-      setRailPosition(event);
-    });
-
-    function endRailDrag(event) {
-      if (!railActive || event.pointerId !== railPointerId) return;
-      railActive = false;
-      strip.classList.remove("is-dragging");
-      if (rail.releasePointerCapture) {
-        try { rail.releasePointerCapture(railPointerId); } catch (error) {}
-      }
-      updateScrollHints();
-    }
-
-    rail.addEventListener("pointerup", endRailDrag);
-    rail.addEventListener("pointercancel", endRailDrag);
   }
 
   function render() {
@@ -904,6 +859,15 @@
     });
   });
 
+  if (eraSlider) {
+    eraSlider.addEventListener("input", function () {
+      var index = Math.max(0, Math.min(ERA_VALUES.length - 1, Number(eraSlider.value)));
+      state.era = ERA_VALUES[index];
+      syncEraSlider();
+      render();
+    });
+  }
+
   document.querySelectorAll(".chips").forEach(function (strip) {
     strip.addEventListener("scroll", updateScrollHints, { passive: true });
     enableDragScroll(strip);
@@ -947,8 +911,11 @@
         btn.classList.toggle("is-active", i === 0);
       });
     });
+    syncEraSlider();
     render();
   });
 
+  syncEraSlider();
   render();
+  window.addEventListener("pageshow", syncEraSlider);
 })();

@@ -269,13 +269,17 @@
           <button class="chip" type="button" data-value="亚洲">亚洲</button>
         </div>
       </div>
-      <div class="filter">
-        <span class="filter__label">时期</span>
-        <div class="chips" data-filter="era" role="group" aria-label="按时期筛选">
-          <button class="chip is-active" type="button" data-value="all">全部</button>
-          <button class="chip" type="button" data-value="early">1900–1945</button>
-          <button class="chip" type="button" data-value="postwar">1946–1979</button>
-          <button class="chip" type="button" data-value="contemporary">1980 至今</button>
+      <div class="filter filter--era">
+        <span class="filter__label" id="era-filter-label">时期</span>
+        <div class="era-slider">
+          <input class="era-slider__input" id="era-slider" type="range" min="0" max="3" step="1" value="0"
+            autocomplete="off" aria-labelledby="era-filter-label" aria-valuetext="全部">
+          <div class="era-slider__labels" aria-hidden="true">
+            <span class="era-slider__label is-active" data-era-label="all">全部</span>
+            <span class="era-slider__label" data-era-label="early"><span class="era-slider__label-long">1900–1945</span><span class="era-slider__label-short">1900–45</span></span>
+            <span class="era-slider__label" data-era-label="postwar"><span class="era-slider__label-long">1946–1979</span><span class="era-slider__label-short">1946–79</span></span>
+            <span class="era-slider__label" data-era-label="contemporary"><span class="era-slider__label-long">1980 至今</span><span class="era-slider__label-short">1980+</span></span>
+          </div>
         </div>
       </div>
       <button class="reset" type="button" id="reset" hidden>清除筛选</button>
