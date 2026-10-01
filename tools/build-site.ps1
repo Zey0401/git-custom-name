@@ -46,6 +46,11 @@ foreach ($chunk in $chunks) {
     if (-not $sig.Success) { throw "解析 signature 失败，请检查 data.js 格式" }
     $img = [regex]::Match($chunk, 'images:\s*\[\s*\{\s*src:\s*"([^"]+)"')
 
+    $workList = @()
+    foreach ($m in [regex]::Matches($chunk, '\{ name: "([^"]+)", year: (\d+), place: "([^"]+)"')) {
+        $workList += ("{0}（{1}，{2}）" -f $m.Groups[1].Value, $m.Groups[2].Value, $m.Groups[3].Value)
+    }
+
     $items += [pscustomobject]@{
         Id        = [regex]::Match($chunk, 'id:\s*"([^"]+)"').Groups[1].Value
         Name      = [regex]::Match($chunk, 'name:\s*"([^"]+)"').Groups[1].Value
@@ -61,6 +66,7 @@ foreach ($chunk in $chunks) {
         SigYear   = [int]$sig.Groups[3].Value
         SigPlace  = $sig.Groups[4].Value
         Image     = $img.Groups[1].Value
+        Works     = ($workList -join "、")
     }
 }
 if ($items.Count -eq 0) { throw "没有解析到任何建筑师数据" }
@@ -83,6 +89,7 @@ for ($n = 0; $n -lt $items.Count; $n++) {
           <p class="card__meta"><span class="tag">$(Esc $it.Movement)</span><span>$(Esc $it.Country) · $(Esc $it.EraLabel)</span></p>
           <p class="card__desc">$(Esc $it.Bio)</p>
           <p class="card__work"><strong>$(Esc $it.SigTitle)</strong><span>$(Esc $it.SigPlace)</span></p>
+          <p class="card__works">代表作：$(Esc $it.Works)</p>
         </div>
       </article>
 "@

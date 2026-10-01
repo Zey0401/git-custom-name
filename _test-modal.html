@@ -1,0 +1,20 @@
+<!doctype html>
+<html lang="zh-CN">
+<head><meta charset="utf-8"><title>modal test</title></head>
+<body style="margin:0">
+<iframe id="f" src="index.html" style="width:1280px;height:1400px;border:0;display:block"></iframe>
+<script>
+  var f = document.getElementById("f");
+  f.addEventListener("load", function () {
+    var d = f.contentDocument;
+    setTimeout(function () {
+      d.querySelector(".card").click();
+      setTimeout(function () {
+        var heads = d.querySelectorAll(".work__head");
+        if (heads[1]) { heads[1].click(); heads[1].scrollIntoView({ block: "center" }); }
+      }, 600);
+    }, 800);
+  });
+</script>
+</body>
+</html>

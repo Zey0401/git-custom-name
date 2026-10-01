@@ -119,6 +119,15 @@
     });
   }
 
+  // 筛选条：内容超出宽度时标记为可滑动，并给出边缘渐隐提示
+  function updateScrollHints() {
+    document.querySelectorAll(".chips").forEach(function (strip) {
+      var scrollable = strip.scrollWidth - strip.clientWidth > 4;
+      strip.classList.toggle("is-scrollable", scrollable);
+      strip.classList.toggle("at-end", strip.scrollLeft + strip.clientWidth >= strip.scrollWidth - 4);
+    });
+  }
+
   function render() {
     var items = DATA.filter(matches);
     grid.innerHTML = items.map(cardMarkup).join("");
@@ -141,6 +150,7 @@
     document.getElementById("stat-works").textContent = DATA.length;
     applyImages(grid);
     applyImages(timelineList);
+    updateScrollHints();
   }
 
   function creditMarkup(item) {
@@ -165,9 +175,23 @@
 
     var works = item.works.slice().sort(function (a, b) {
       return a.year - b.year;
-    }).map(function (work) {
-      return '<li><strong>' + esc(work.name) + '</strong><b>' + esc(work.year) + '</b>' +
-        '<em>' + esc(work.place) + '</em></li>';
+    }).map(function (work, i) {
+      var isSignature = work.name === item.signature.title;
+      var search = "https://zh.wikipedia.org/wiki/Special:Search?search=" + encodeURIComponent(work.name);
+      return '<li class="work' + (isSignature ? " is-signature" : "") + '">' +
+        '<button class="work__head" type="button" aria-expanded="false" aria-controls="work-detail-' + i + '">' +
+          '<span class="work__title">' + esc(work.name) +
+            (isSignature ? '<span class="work__badge">本页主图</span>' : '') +
+          '</span>' +
+          '<b class="work__year">' + esc(work.year) + '</b>' +
+          '<svg class="work__chevron" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="m6 9 6 6 6-6"></path></svg>' +
+          '<em class="work__place">' + esc(work.place) + '</em>' +
+        '</button>' +
+        '<div class="work__detail" id="work-detail-' + i + '" hidden>' +
+          '<p>' + esc(work.desc || "") + '</p>' +
+          '<a class="work__link" href="' + esc(search) + '" target="_blank" rel="noopener">在维基百科查看 ↗</a>' +
+        '</div>' +
+      '</li>';
     }).join("");
 
     var keywords = item.keywords.map(function (word) {
@@ -221,6 +245,14 @@
   }
 
   document.addEventListener("click", function (event) {
+    var workHead = event.target.closest(".work__head");
+    if (workHead) {
+      var detail = workHead.nextElementSibling;
+      var isOpen = workHead.getAttribute("aria-expanded") === "true";
+      workHead.setAttribute("aria-expanded", isOpen ? "false" : "true");
+      if (detail) detail.hidden = isOpen;
+      return;
+    }
     var card = event.target.closest("[data-id]");
     if (card) {
       openModal(card.getAttribute("data-id"));
@@ -261,6 +293,16 @@
       });
       render();
     });
+  });
+
+  document.querySelectorAll(".chips").forEach(function (strip) {
+    strip.addEventListener("scroll", updateScrollHints, { passive: true });
+  });
+
+  var resizeTimer = null;
+  window.addEventListener("resize", function () {
+    window.clearTimeout(resizeTimer);
+    resizeTimer = window.setTimeout(updateScrollHints, 120);
   });
 
   document.querySelectorAll("[data-view]").forEach(function (button) {
